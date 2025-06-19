@@ -3,11 +3,12 @@
 
 #include <FastAccelStepper.h>
 #include <Bounce2.h>
-#include "../src/Config/Config.h"
+#include "Config/Config.h"
 
 //* ************************************************************************
 //* ************************ GLOBAL OBJECTS *******************************
 //* ************************************************************************
+//! Global hardware objects used throughout the application
 
 extern FastAccelStepperEngine stepperEngine;
 extern FastAccelStepper *stepper;
@@ -17,6 +18,7 @@ extern Bounce2::Button homingSwitch;
 //* ************************************************************************
 //* ************************ STATE FUNCTION DECLARATIONS *****************
 //* ************************************************************************
+//! State machine function declarations
 
 // State functions
 void homingState();
@@ -24,7 +26,7 @@ void idleState();
 void cuttingCycleState();
 
 // Utility functions
-void initializeHardware();
+bool initializeHardware();
 void extendClamp();
 void retractClamp();
 

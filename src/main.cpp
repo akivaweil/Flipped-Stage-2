@@ -38,7 +38,13 @@ void setup() {
     //! ************************************************************************
     //! STEP 2: INITIALIZE HARDWARE
     //! ************************************************************************
-    initializeHardware();
+    if (!initializeHardware()) {
+        Serial.println("CRITICAL ERROR: Hardware initialization failed!");
+        Serial.println("System halted - check connections and restart");
+        while(true) {
+            delay(1000);  // Halt system execution
+        }
+    }
     
     //! ************************************************************************
     //! STEP 3: START STATE MACHINE
@@ -87,5 +93,5 @@ void loop() {
     displayIP();
     
     // Small delay to prevent overwhelming the serial output
-    delay(10);
+    delay(MAIN_LOOP_DELAY_MS);
 }

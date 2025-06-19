@@ -1,11 +1,12 @@
-#include "../../../include/StateMachine.h"
+#include "StateMachine.h"
 
 //* ************************************************************************
 //* ************************ HARDWARE INITIALIZATION *********************
 //* ************************************************************************
 //! Initialize all hardware components for the Flipped Stage 2 machine
+//! @return bool - true if initialization successful, false otherwise
 
-void initializeHardware() {
+bool initializeHardware() {
     Serial.println("Initializing hardware...");
     
     //! ************************************************************************
@@ -19,9 +20,10 @@ void initializeHardware() {
         stepper->setEnablePin(STEPPER_ENABLE_PIN);
         stepper->setAutoEnable(true);
         stepper->setAcceleration(STEPPER_ACCELERATION);
-        Serial.println("Stepper motor initialized");
+        Serial.println("Stepper motor initialized successfully");
     } else {
         Serial.println("ERROR: Failed to initialize stepper motor!");
+        return false;
     }
     
     //! ************************************************************************
@@ -38,16 +40,18 @@ void initializeHardware() {
     homingSwitch.interval(HOMING_SWITCH_DEBOUNCE_MS);
     homingSwitch.setPressedState(HIGH);
     
-    Serial.println("Input buttons initialized");
+    Serial.println("Input buttons initialized successfully");
     
     //! ************************************************************************
     //! STEP 3: INITIALIZE OUTPUT PINS
     //! ************************************************************************
     
-    // Clamp relay control
+    // Clamp relay control - initialize to extended position
     pinMode(CLAMP_RELAY_PIN, OUTPUT);
     digitalWrite(CLAMP_RELAY_PIN, LOW);  // Start with clamp extended (LOW signal)
     
-    Serial.println("Output pins initialized");
+    Serial.println("Output pins initialized successfully");
     Serial.println("Hardware initialization complete!");
+    
+    return true;
 } 
