@@ -14,6 +14,7 @@
 
 // State machine variables
 MachineState currentState = STATE_HOMING;
+CuttingSubstate currentSubstate = SUBSTATE_APPROACH;
 
 // Hardware objects
 FastAccelStepperEngine stepperEngine = FastAccelStepperEngine();

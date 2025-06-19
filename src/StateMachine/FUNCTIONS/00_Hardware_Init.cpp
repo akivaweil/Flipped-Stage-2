@@ -45,7 +45,7 @@ void initializeHardware() {
     
     // Clamp relay control
     pinMode(CLAMP_RELAY_PIN, OUTPUT);
-    digitalWrite(CLAMP_RELAY_PIN, LOW);  // Start with clamp retracted
+    digitalWrite(CLAMP_RELAY_PIN, HIGH);  // Start with clamp retracted (HIGH signal)
     
     Serial.println("Output pins initialized");
     Serial.println("Hardware initialization complete!");
