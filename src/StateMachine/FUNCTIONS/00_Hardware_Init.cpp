@@ -18,6 +18,7 @@ void initializeHardware() {
         stepper->setDirectionPin(STEPPER_DIR_PIN);
         stepper->setEnablePin(STEPPER_ENABLE_PIN);
         stepper->setAutoEnable(true);
+        stepper->setAcceleration(STEPPER_ACCELERATION);
         Serial.println("Stepper motor initialized");
     } else {
         Serial.println("ERROR: Failed to initialize stepper motor!");
