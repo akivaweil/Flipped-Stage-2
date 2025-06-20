@@ -26,7 +26,7 @@
 //* ************************************************************************
 
 // Motor specifications
-#define STEPS_PER_REV           200      // 200 steps per revolution
+#define STEPS_PER_REV           400      // 200 steps per revolution
 #define PULLEY_TEETH            60       // 60 tooth pulley
 #define BELT_PITCH_MM           2.0      // 2GT belt (2mm pitch)
 
@@ -38,12 +38,12 @@
 
 // Motion settings
 #define HOMING_SPEED            500      // Steps/second for homing
-#define HOMING_OFFSET_INCHES    0.2      // Offset after homing trigger
+#define HOMING_OFFSET_INCHES    2      // Offset after homing trigger
 #define HOMING_OFFSET_MM        (HOMING_OFFSET_INCHES * MM_PER_INCH)   // Convert to mm
 #define HOMING_OFFSET_STEPS     (HOMING_OFFSET_MM * STEPS_PER_MM) // Convert to steps
 
 // Acceleration setting
-#define STEPPER_ACCELERATION    3000     // Steps/second² for all movements
+#define STEPPER_ACCELERATION    30000     // Steps/second² for all movements
 
 //* ************************************************************************
 //* ************************ CUTTING CYCLE SETTINGS **********************
@@ -51,7 +51,7 @@
 
 // Cutting cycle movements
 #define APPROACH_DISTANCE_INCHES    5.0     // Approach distance
-#define CUTTING_DISTANCE_INCHES     3.0     // Cutting distance  
+#define CUTTING_DISTANCE_INCHES     10.0     // Cutting distance  
 #define DROPOFF_DISTANCE_INCHES     10.0    // Drop off distance
 #define CLAMP_RETRACT_DISTANCE_INCHES 7.0   // Distance when clamps retract during drop off
 

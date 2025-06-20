@@ -11,25 +11,25 @@
 //* ************************************************************************
 
 // Start button (Active HIGH)
-#define START_BUTTON_PIN        14
+#define START_BUTTON_PIN        16
 
 // Homing switch (Active HIGH) 
-#define HOMING_SWITCH_PIN       27
+#define HOMING_SWITCH_PIN       15
 
 //* ************************************************************************
 //* ************************ STEPPER MOTOR PINS ***************************
 //* ************************************************************************
 
 // Stepper motor control pins
-#define STEPPER_UL_PIN          32    // Ultra-low step pin
-#define STEPPER_DIR_PIN         33    // Direction pin
-#define STEPPER_ENABLE_PIN      25    // Enable pin
+#define STEPPER_PUL_PIN         6    // Pulse pin
+#define STEPPER_DIR_PIN         7    // Direction pin
+#define STEPPER_ENABLE_PIN      17    // Enable pin
 
 //* ************************************************************************
 //* ************************ OUTPUT PINS **********************************
 //* ************************************************************************
 
 // Clamp control relay
-#define CLAMP_RELAY_PIN         26
+#define CLAMP_RELAY_PIN         37
 
 #endif 

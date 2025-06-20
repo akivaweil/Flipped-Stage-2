@@ -13,7 +13,7 @@ bool initializeHardware() {
     //! STEP 1: INITIALIZE STEPPER MOTOR
     //! ************************************************************************
     stepperEngine.init();
-    stepper = stepperEngine.stepperConnectToPin(STEPPER_UL_PIN);
+    stepper = stepperEngine.stepperConnectToPin(STEPPER_PUL_PIN);
     
     if (stepper) {
         stepper->setDirectionPin(STEPPER_DIR_PIN);

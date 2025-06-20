@@ -20,13 +20,10 @@ void homingState() {
         stepper->enableOutputs();
         stepper->setSpeedInHz(HOMING_SPEED);
         
-        // Set direction negative (assuming LOW = negative direction)
-        digitalWrite(STEPPER_DIR_PIN, LOW);
-        
         //! ************************************************************************
-        //! STEP 2: START MOVING TOWARDS HOME SWITCH
+        //! STEP 2: START MOVING TOWARDS HOME SWITCH (NEGATIVE DIRECTION)
         //! ************************************************************************
-        stepper->runForward();
+        stepper->runBackward();
         homingStarted = true;
         Serial.println("Moving towards home switch...");
     }

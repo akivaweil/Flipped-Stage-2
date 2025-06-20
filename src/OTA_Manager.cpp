@@ -111,7 +111,7 @@ void handleOTA() {
 void displayIP() {
   //! Display IP every 10 seconds
   static unsigned long lastPrint = 0;
-  if (millis() - lastPrint > 10000) {
+  if (millis() - lastPrint > 100000) {
     Serial.print("ESP32 IP: ");
     Serial.println(WiFi.localIP());
     lastPrint = millis();
