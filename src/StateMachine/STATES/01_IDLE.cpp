@@ -12,7 +12,8 @@ void idleState() {
     if (firstEntry) {
         retractClamp();
         clampsRetracted = true;
-        Serial.println("Machine ready - waiting for start button...");
+        Serial.print("Machine ready - waiting for start button... Current position: ");
+        Serial.println(stepper->getCurrentPosition());
         firstEntry = false;
     }
     
@@ -25,7 +26,6 @@ void idleState() {
     //! ************************************************************************
     if (homingSwitch.pressed()) {
         Serial.println("Homing switch pressed! Moving gantry away from home position...");
-        stepper->enableOutputs();
         stepper->setDirectionPin(STEPPER_DIR_PIN, HIGH);  // Set direction away from home
         stepper->setSpeedInHz(HOMING_SPEED);
         stepper->move(HOMING_OFFSET_STEPS);
@@ -35,7 +35,6 @@ void idleState() {
             delay(1);
         }
         
-        stepper->disableOutputs();  // Disable stepper to save power
         Serial.println("Gantry moved away from home position");
     }
     

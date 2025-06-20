@@ -43,7 +43,7 @@
 #define HOMING_OFFSET_STEPS     (HOMING_OFFSET_MM * STEPS_PER_MM) // Convert to steps
 
 // Acceleration setting
-#define STEPPER_ACCELERATION    30000     // Steps/second² for all movements
+#define STEPPER_ACCELERATION    20000     // Steps/second² for all movements - reduced for better step reliability
 
 //* ************************************************************************
 //* ************************ CUTTING CYCLE SETTINGS **********************
@@ -62,10 +62,10 @@
 #define CLAMP_RETRACT_DISTANCE_STEPS (CLAMP_RETRACT_DISTANCE_INCHES * STEPS_PER_INCH)
 
 // Cutting cycle speeds (steps/second)
-#define APPROACH_SPEED              3000    // Approach speed
-#define CUTTING_SPEED               150    // Cutting speed
-#define DROPOFF_SPEED               10000   // Drop off speed
-#define RETURN_SPEED                10000   // Return to home speed
+#define APPROACH_SPEED              2500    // Approach speed - reduced for better reliability
+#define CUTTING_SPEED               150     // Cutting speed
+#define DROPOFF_SPEED               8000    // Drop off speed - reduced for better reliability
+#define RETURN_SPEED                6000    // Return to home speed - reduced for better reliability
 
 // Timing
 #define CLAMP_ENGAGE_DELAY_MS       500     // Wait time after clamp engagement

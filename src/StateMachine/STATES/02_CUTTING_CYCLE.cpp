@@ -14,7 +14,6 @@ void cuttingCycleState() {
     
     if (firstEntry) {
         Serial.println("Cutting cycle started...");
-        stepper->enableOutputs();
         currentSubstate = SUBSTATE_APPROACH;
         firstEntry = false;
         clampsRetracted = false;
@@ -174,21 +173,34 @@ void cuttingCycleState() {
             
             if (clampsEngaged && !returnStarted) {
                 stepper->setSpeedInHz(RETURN_SPEED);
-                stepper->moveTo(0);  // Return to home offset position
+                stepper->moveTo(HOMING_OFFSET_STEPS);  // Return to home offset position
                 returnStarted = true;
-                Serial.print("Return: Moving to home position at speed ");
+                Serial.print("Return: Moving to home offset position at speed ");
                 Serial.print(RETURN_SPEED);
                 Serial.println("...");
             }
             
             // Check if return move is complete
             if (returnStarted && !stepper->isRunning()) {
+                // Validate final position
+                long finalPosition = stepper->getCurrentPosition();
                 if (emergencyStop) {
                     Serial.println("Emergency stop complete! Machine returned to IDLE state safely.");
                     Serial.println("Clamps remain extended as requested.");
                 } else {
                     Serial.println("Cutting cycle complete! Returning to IDLE state...");
                 }
+                Serial.print("Final position: ");
+                Serial.print(finalPosition);
+                Serial.print(" (Target: ");
+                Serial.print(HOMING_OFFSET_STEPS);
+                Serial.println(")");
+                
+                // Position validation - warn if drift detected
+                if (abs(finalPosition - HOMING_OFFSET_STEPS) > 5) {
+                    Serial.println("WARNING: Position drift detected! Consider recalibration.");
+                }
+                
                 currentState = STATE_IDLE;
                 
                 // Reset all static variables for next cycle

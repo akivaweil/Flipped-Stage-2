@@ -52,7 +52,7 @@ void homingState() {
     //! ************************************************************************
     if (homingComplete && !stepper->isRunning()) {
         Serial.println("Homing complete! Transitioning to IDLE state.");
-        stepper->setCurrentPosition(0);  // Reset position counter
+        stepper->setCurrentPosition(HOMING_OFFSET_STEPS);  // Set position to homing offset
         currentState = STATE_IDLE;
         
         // Reset homing flags for next time

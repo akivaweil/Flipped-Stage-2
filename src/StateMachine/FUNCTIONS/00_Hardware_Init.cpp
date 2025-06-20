@@ -18,9 +18,10 @@ bool initializeHardware() {
     if (stepper) {
         stepper->setDirectionPin(STEPPER_DIR_PIN);
         stepper->setEnablePin(STEPPER_ENABLE_PIN);
-        stepper->setAutoEnable(true);
+        stepper->setAutoEnable(false);  // Manual control of enable pin to maintain holding torque
         stepper->setAcceleration(STEPPER_ACCELERATION);
-        Serial.println("Stepper motor initialized successfully");
+        stepper->enableOutputs();  // Keep stepper enabled to maintain position
+        Serial.println("Stepper motor initialized successfully with holding torque enabled");
     } else {
         Serial.println("ERROR: Failed to initialize stepper motor!");
         return false;
