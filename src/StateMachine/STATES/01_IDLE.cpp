@@ -10,10 +10,16 @@ void idleState() {
     static bool firstEntry = true;
     
     if (firstEntry) {
+        // Ensure complete reset when entering IDLE state
         retractClamp();
         clampsRetracted = true;
+        
+        // Reset cutting substate to default for clean next cycle start
+        currentSubstate = SUBSTATE_APPROACH;
+        
         Serial.print("Machine ready - waiting for start button... Current position: ");
         Serial.println(stepper->getCurrentPosition());
+        Serial.println("All systems reset and ready for next cutting cycle");
         firstEntry = false;
     }
     

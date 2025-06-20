@@ -6,11 +6,40 @@
 //! Cutting cycle state: Continuous movement with speed changes during motion
 
 void cuttingCycleState() {
+    // Static variables that need to be reset between cycles
     static bool firstEntry = true;
     static unsigned long delayStartTime = 0;
     static unsigned long cycleStartTime = 0;  // Track when cycle started
     static bool clampEngaged = false;
     static bool emergencyStop = false;
+    
+    // Substate-specific static variables
+    static bool approachStarted = false;
+    static bool cuttingStarted = false;
+    static bool dropoffStarted = false;
+    static long dropoffStartPosition = 0;
+    static bool dropoffDelayStarted = false;
+    static unsigned long dropoffDelayStartTime = 0;
+    static bool returnStarted = false;
+    static bool clampsEngaged = false;
+    
+    // Function to reset all static variables for a complete fresh start
+    auto resetAllFlags = []() {
+        firstEntry = true;
+        delayStartTime = 0;
+        cycleStartTime = 0;
+        clampEngaged = false;
+        emergencyStop = false;
+        approachStarted = false;
+        cuttingStarted = false;
+        dropoffStarted = false;
+        dropoffStartPosition = 0;
+        dropoffDelayStarted = false;
+        dropoffDelayStartTime = 0;
+        returnStarted = false;
+        clampsEngaged = false;
+        clampsRetracted = false;
+    };
     
     if (firstEntry) {
         Serial.println("Cutting cycle started...");
@@ -54,10 +83,19 @@ void cuttingCycleState() {
             // Ensure clamps stay extended as requested
             extendClamp();
             
+            // CRITICAL: Reset all substate flags to prevent skipping sections in next cycle
+            approachStarted = false;
+            cuttingStarted = false;
+            dropoffStarted = false;
+            dropoffDelayStarted = false;
+            returnStarted = false;
+            clampsEngaged = false;
+            
             // Set emergency stop flag and go directly to emergency return
             emergencyStop = true;
             currentSubstate = SUBSTATE_RETURN;
             Serial.println("Emergency return initiated - clamps remain extended");
+            Serial.println("All cycle flags reset for clean restart");
         }
     }
     
@@ -68,7 +106,6 @@ void cuttingCycleState() {
             //! ************************************************************************
             //! SUBSTATE 1: APPROACH - EXTEND CLAMPS AND MOVE APPROACH DISTANCE
             //! ************************************************************************
-            static bool approachStarted = false;
             
             if (!clampEngaged) {
                 extendClamp();
@@ -93,7 +130,6 @@ void cuttingCycleState() {
             if (approachStarted && !stepper->isRunning()) {
                 Serial.println("Approach complete! Starting cutting phase...");
                 currentSubstate = SUBSTATE_CUTTING;
-                approachStarted = false; // Reset for next cycle
             }
             break;
         }
@@ -103,7 +139,6 @@ void cuttingCycleState() {
             //! ************************************************************************
             //! SUBSTATE 2: CUTTING - MOVE CUTTING DISTANCE AT SLOW SPEED
             //! ************************************************************************
-            static bool cuttingStarted = false;
             
             if (!cuttingStarted) {
                 stepper->setSpeedInHz(CUTTING_SPEED);
@@ -120,7 +155,6 @@ void cuttingCycleState() {
             if (cuttingStarted && !stepper->isRunning()) {
                 Serial.println("Cutting complete! Starting drop off phase...");
                 currentSubstate = SUBSTATE_DROPOFF;
-                cuttingStarted = false; // Reset for next cycle
             }
             break;
         }
@@ -130,10 +164,6 @@ void cuttingCycleState() {
             //! ************************************************************************
             //! SUBSTATE 3: DROP OFF - MOVE DROP OFF DISTANCE AND RETRACT CLAMPS
             //! ************************************************************************
-            static bool dropoffStarted = false;
-            static long dropoffStartPosition = 0;
-            static bool dropoffDelayStarted = false;
-            static unsigned long dropoffDelayStartTime = 0;
             
             if (!dropoffStarted) {
                 dropoffStartPosition = stepper->getCurrentPosition();
@@ -174,8 +204,6 @@ void cuttingCycleState() {
                 if (dropoffDelayStarted && (millis() - dropoffDelayStartTime >= 500)) {
                     Serial.println("Drop off delay complete! Starting return movement...");
                     currentSubstate = SUBSTATE_RETURN;
-                    dropoffStarted = false; // Reset for next cycle
-                    dropoffDelayStarted = false; // Reset for next cycle
                 }
             }
             break;
@@ -186,8 +214,6 @@ void cuttingCycleState() {
             //! ************************************************************************
             //! SUBSTATE 4: RETURN - ENGAGE CLAMPS AND RETURN TO HOME OFFSET
             //! ************************************************************************
-            static bool returnStarted = false;
-            static bool clampsEngaged = false;
             
             if (!clampsEngaged) {
                 extendClamp();
@@ -231,13 +257,10 @@ void cuttingCycleState() {
                 
                 currentState = STATE_IDLE;
                 
-                // Reset all static variables for next cycle
-                firstEntry = true;
-                returnStarted = false;
-                clampsEngaged = false;
-                clampsRetracted = false;
-                clampEngaged = false;
-                emergencyStop = false;
+                // CRITICAL: Complete reset of all static variables for next cycle
+                Serial.println("Performing complete reset of all cutting cycle flags...");
+                resetAllFlags();
+                Serial.println("All flags reset - ready for next cycle");
             }
             break;
         }
@@ -245,7 +268,7 @@ void cuttingCycleState() {
         default:
             Serial.println("ERROR: Unknown cutting substate! Returning to IDLE...");
             currentState = STATE_IDLE;
-            firstEntry = true;
+            resetAllFlags();
             break;
     }
 } 
