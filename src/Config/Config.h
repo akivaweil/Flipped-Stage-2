@@ -25,6 +25,10 @@
 //* ************************ STEPPER MOTOR SETTINGS **********************
 //* ************************************************************************
 
+// Closed-loop stepper settings
+#define POSITION_TOLERANCE      10       // Maximum allowed position error (steps)
+#define AUTO_POSITION_CORRECTION true    // Enable automatic position correction
+
 // Motor specifications
 #define STEPS_PER_REV           400      // 200 steps per revolution
 #define PULLEY_TEETH            60       // 60 tooth pulley

@@ -14,6 +14,22 @@ void cuttingCycleState() {
     
     if (firstEntry) {
         Serial.println("Cutting cycle started...");
+        
+        // Check for closed-loop position drift before starting cycle
+        long currentPos = stepper->getCurrentPosition();
+        long expectedPos = HOMING_OFFSET_STEPS;
+        long positionError = abs(currentPos - expectedPos);
+        
+        if (positionError > 10) {  // Allow small tolerance
+            Serial.print("WARNING: Large position error detected! Current: ");
+            Serial.print(currentPos);
+            Serial.print(", Expected: ");
+            Serial.print(expectedPos);
+            Serial.print(", Error: ");
+            Serial.println(positionError);
+            Serial.println("This suggests closed-loop stepper corrections occurred");
+        }
+        
         currentSubstate = SUBSTATE_APPROACH;
         firstEntry = false;
         clampsRetracted = false;

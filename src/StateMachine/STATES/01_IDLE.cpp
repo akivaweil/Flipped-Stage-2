@@ -22,10 +22,18 @@ void idleState() {
     homingSwitch.update();
     
     //! ************************************************************************
-    //! STEP 1: CHECK FOR HOMING SWITCH PRESS
+    //! STEP 1: CHECK FOR HOMING SWITCH PRESS - CLOSED LOOP POSITION CORRECTION
     //! ************************************************************************
     if (homingSwitch.pressed()) {
-        Serial.println("Homing switch pressed! Moving gantry away from home position...");
+        Serial.println("POSITION DRIFT DETECTED! Homing switch active but ESP32 thinks position is:");
+        Serial.println(stepper->getCurrentPosition());
+        Serial.println("Correcting closed-loop stepper position mismatch...");
+        
+        // Force position correction - set current position to 0 since we're at home switch
+        stepper->setCurrentPosition(0);
+        Serial.println("Position reset to 0 (at home switch)");
+        
+        // Move to proper offset position
         stepper->setDirectionPin(STEPPER_DIR_PIN, HIGH);  // Set direction away from home
         stepper->setSpeedInHz(HOMING_SPEED);
         stepper->move(HOMING_OFFSET_STEPS);
@@ -35,7 +43,10 @@ void idleState() {
             delay(1);
         }
         
-        Serial.println("Gantry moved away from home position");
+        // Set final position to offset value
+        stepper->setCurrentPosition(HOMING_OFFSET_STEPS);
+        Serial.print("Position corrected! New position: ");
+        Serial.println(stepper->getCurrentPosition());
     }
     
     //! ************************************************************************
