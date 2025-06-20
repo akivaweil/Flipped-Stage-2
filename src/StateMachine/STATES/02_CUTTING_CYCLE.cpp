@@ -166,7 +166,7 @@ void cuttingCycleState() {
         case SUBSTATE_DROPOFF:
         {
             //! ************************************************************************
-            //! SUBSTATE 3: DROP OFF - MOVE DROP OFF DISTANCE AND RETRACT CLAMPS
+            //! SUBSTATE 3: DROP OFF - MOVE DROP OFF DISTANCE THEN RETRACT CLAMPS
             //! ************************************************************************
             
             if (!dropoffStarted) {
@@ -181,31 +181,23 @@ void cuttingCycleState() {
                 Serial.println("...");
             }
             
-            // Check if we've moved the clamp retract distance and need to retract clamps
-            // Skip clamp retraction if this is an emergency stop
-            if (!clampsRetracted && !emergencyStop && dropoffStarted) {
-                long currentPosition = stepper->getCurrentPosition();
-                long distanceMoved = currentPosition - dropoffStartPosition;
-                
-                if (distanceMoved >= CLAMP_RETRACT_DISTANCE_STEPS) {
-                    retractClamp();
-                    clampsRetracted = true;
-                    Serial.print("Drop off: ");
-                    Serial.print(CLAMP_RETRACT_DISTANCE_INCHES);
-                    Serial.println(" inches reached - clamps retracted during movement");
-                }
-            }
-            
             // Check if drop off movement is complete
             if (dropoffStarted && !stepper->isRunning()) {
+                // Retract clamps after movement complete but before delay
+                if (!clampsRetracted && !emergencyStop) {
+                    retractClamp();
+                    clampsRetracted = true;
+                    Serial.println("Drop off complete! Clamps retracted.");
+                }
+                
                 if (!dropoffDelayStarted) {
-                    Serial.println("Drop off complete! Starting 500ms delay before return...");
+                    Serial.println("Starting 1000ms delay before return...");
                     dropoffDelayStartTime = millis();
                     dropoffDelayStarted = true;
                 }
                 
-                // Check if 500ms delay has elapsed
-                if (dropoffDelayStarted && (millis() - dropoffDelayStartTime >= 500)) {
+                // Check if 1000ms delay has elapsed
+                if (dropoffDelayStarted && (millis() - dropoffDelayStartTime >= 1000)) {
                     Serial.println("Drop off delay complete! Starting return movement...");
                     currentSubstate = SUBSTATE_RETURN;
                 }

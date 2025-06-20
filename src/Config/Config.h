@@ -57,14 +57,12 @@
 // Cutting cycle movements
 #define APPROACH_DISTANCE_INCHES    3.5     // Approach distance
 #define CUTTING_DISTANCE_INCHES     5.0     // Cutting distance  
-#define DROPOFF_DISTANCE_INCHES     12.5    // Drop off distance
-#define CLAMP_RETRACT_DISTANCE_INCHES 12.5   // Distance when clamps retract during drop off
+#define DROPOFF_DISTANCE_INCHES     15    // Drop off distance
 
 // Convert distances to steps
 #define APPROACH_DISTANCE_STEPS     (APPROACH_DISTANCE_INCHES * STEPS_PER_INCH)
 #define CUTTING_DISTANCE_STEPS      (CUTTING_DISTANCE_INCHES * STEPS_PER_INCH)
 #define DROPOFF_DISTANCE_STEPS      (DROPOFF_DISTANCE_INCHES * STEPS_PER_INCH)
-#define CLAMP_RETRACT_DISTANCE_STEPS (CLAMP_RETRACT_DISTANCE_INCHES * STEPS_PER_INCH)
 
 // Cutting cycle speeds (steps/second)
 #define APPROACH_SPEED              20000    // Approach speed - reduced for better reliability
