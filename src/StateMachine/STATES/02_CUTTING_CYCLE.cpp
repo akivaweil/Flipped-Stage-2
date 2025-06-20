@@ -21,9 +21,6 @@ void cuttingCycleState() {
     static const long DROPOFF_START_POSITION = APPROACH_DISTANCE_STEPS + CUTTING_DISTANCE_STEPS;
     static const long CLAMP_RETRACT_POSITION = DROPOFF_START_POSITION + CLAMP_RETRACT_DISTANCE_STEPS;
     
-    // Emergency stop safety delay (2 seconds after cycle start)
-    static const unsigned long EMERGENCY_STOP_DELAY_MS = 500;
-    
     if (firstEntry) {
         Serial.println("Cutting cycle started...");
         stepper->enableOutputs();

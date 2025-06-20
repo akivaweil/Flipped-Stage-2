@@ -69,6 +69,7 @@
 
 // Timing
 #define CLAMP_ENGAGE_DELAY_MS       500     // Wait time after clamp engagement
+#define EMERGENCY_STOP_DELAY_MS     500     // Safety delay before emergency stop can be activated
 
 //* ************************************************************************
 //* ************************ STATE DEFINITIONS ****************************
