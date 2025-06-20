@@ -109,13 +109,13 @@ void cuttingCycleState() {
             
             if (!clampEngaged) {
                 extendClamp();
-                delayStartTime = millis();
                 clampEngaged = true;
-                Serial.println("Approach: Clamps extended, waiting 0.5 seconds...");
+                Serial.println("Approach: Clamps extended, starting approach movement...");
             }
             
-            // Wait 0.5 seconds after clamp engagement
-            if (clampEngaged && !approachStarted && (millis() - delayStartTime >= CLAMP_ENGAGE_DELAY_MS)) {
+            // Start approach movement immediately after clamp engagement
+            if (clampEngaged && !approachStarted) {
+                stepper->setAcceleration(APPROACH_ACCELERATION);
                 stepper->setSpeedInHz(APPROACH_SPEED);
                 stepper->move(APPROACH_DISTANCE_STEPS);
                 approachStarted = true;
@@ -123,12 +123,16 @@ void cuttingCycleState() {
                 Serial.print(APPROACH_DISTANCE_INCHES);
                 Serial.print(" inches at speed ");
                 Serial.print(APPROACH_SPEED);
+                Serial.print(" with acceleration ");
+                Serial.print(APPROACH_ACCELERATION);
                 Serial.println("...");
             }
             
             // Check if approach movement is complete
             if (approachStarted && !stepper->isRunning()) {
                 Serial.println("Approach complete! Starting cutting phase...");
+                // Reset acceleration to normal for other movements
+                stepper->setAcceleration(STEPPER_ACCELERATION);
                 currentSubstate = SUBSTATE_CUTTING;
             }
             break;
@@ -212,16 +216,16 @@ void cuttingCycleState() {
         case SUBSTATE_RETURN:
         {
             //! ************************************************************************
-            //! SUBSTATE 4: RETURN - ENGAGE CLAMPS AND RETURN TO HOME OFFSET
+            //! SUBSTATE 4: RETURN - RETRACT CLAMPS AND RETURN TO HOME OFFSET
             //! ************************************************************************
             
             if (!clampsEngaged) {
-                extendClamp();
+                retractClamp();
                 clampsEngaged = true;
                 if (emergencyStop) {
-                    Serial.println("Emergency return: Clamps secured, returning to home...");
+                    Serial.println("Emergency return: Clamps retracted, returning to home...");
                 } else {
-                    Serial.println("Return: Clamps engaged, returning to home...");
+                    Serial.println("Return: Clamps retracted, returning to home...");
                 }
             }
             
@@ -240,7 +244,7 @@ void cuttingCycleState() {
                 long finalPosition = stepper->getCurrentPosition();
                 if (emergencyStop) {
                     Serial.println("Emergency stop complete! Machine returned to IDLE state safely.");
-                    Serial.println("Clamps remain extended as requested.");
+                    Serial.println("Clamps retracted for safety.");
                 } else {
                     Serial.println("Cutting cycle complete! Returning to IDLE state...");
                 }

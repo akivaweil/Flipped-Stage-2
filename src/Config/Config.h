@@ -48,6 +48,7 @@
 
 // Acceleration setting
 #define STEPPER_ACCELERATION    60000     // Steps/second² for all movements - reduced for better step reliability
+#define APPROACH_ACCELERATION   2000      // Steps/second² for approach movement - slower for precision
 
 //* ************************************************************************
 //* ************************ CUTTING CYCLE SETTINGS **********************
