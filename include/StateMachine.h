@@ -14,6 +14,7 @@ extern FastAccelStepperEngine stepperEngine;
 extern FastAccelStepper *stepper;
 extern Bounce2::Button startButton;
 extern Bounce2::Button homingSwitch;
+extern bool clampsRetracted;
 
 //* ************************************************************************
 //* ************************ STATE FUNCTION DECLARATIONS *****************

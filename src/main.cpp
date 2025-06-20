@@ -21,6 +21,7 @@ FastAccelStepperEngine stepperEngine = FastAccelStepperEngine();
 FastAccelStepper *stepper = NULL;
 Bounce2::Button startButton = Bounce2::Button();
 Bounce2::Button homingSwitch = Bounce2::Button();
+bool clampsRetracted = false;
 
 //* ************************************************************************
 //* ************************ SETUP FUNCTION ******************************

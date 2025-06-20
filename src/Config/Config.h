@@ -18,7 +18,7 @@
 //* ************************ DEBOUNCE SETTINGS ****************************
 //* ************************************************************************
 
-#define HOMING_SWITCH_DEBOUNCE_MS   5     // Homing switch debounce interval
+#define HOMING_SWITCH_DEBOUNCE_MS   10     // Homing switch debounce interval
 #define START_BUTTON_DEBOUNCE_MS    20    // Start button debounce interval
 
 //* ************************************************************************
@@ -37,8 +37,8 @@
 #define STEPS_PER_INCH          (STEPS_PER_MM * MM_PER_INCH)    // Steps per inch
 
 // Motion settings
-#define HOMING_SPEED            500      // Steps/second for homing
-#define HOMING_OFFSET_INCHES    2      // Offset after homing trigger
+#define HOMING_SPEED            300      // Steps/second for homing
+#define HOMING_OFFSET_INCHES    .5      // Offset after homing trigger
 #define HOMING_OFFSET_MM        (HOMING_OFFSET_INCHES * MM_PER_INCH)   // Convert to mm
 #define HOMING_OFFSET_STEPS     (HOMING_OFFSET_MM * STEPS_PER_MM) // Convert to steps
 
@@ -50,9 +50,9 @@
 //* ************************************************************************
 
 // Cutting cycle movements
-#define APPROACH_DISTANCE_INCHES    5.0     // Approach distance
-#define CUTTING_DISTANCE_INCHES     10.0     // Cutting distance  
-#define DROPOFF_DISTANCE_INCHES     10.0    // Drop off distance
+#define APPROACH_DISTANCE_INCHES    3.5     // Approach distance
+#define CUTTING_DISTANCE_INCHES     4.0     // Cutting distance  
+#define DROPOFF_DISTANCE_INCHES     15.0    // Drop off distance
 #define CLAMP_RETRACT_DISTANCE_INCHES 7.0   // Distance when clamps retract during drop off
 
 // Convert distances to steps
