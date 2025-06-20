@@ -19,7 +19,7 @@
 //* ************************************************************************
 
 #define HOMING_SWITCH_DEBOUNCE_MS   5     // Homing switch debounce interval
-#define START_BUTTON_DEBOUNCE_MS    20    // Start button debounce interval
+#define START_BUTTON_DEBOUNCE_MS    50    // Start button debounce interval
 
 //* ************************************************************************
 //* ************************ STEPPER MOTOR SETTINGS **********************
