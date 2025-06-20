@@ -18,7 +18,7 @@
 //* ************************ DEBOUNCE SETTINGS ****************************
 //* ************************************************************************
 
-#define HOMING_SWITCH_DEBOUNCE_MS   10     // Homing switch debounce interval
+#define HOMING_SWITCH_DEBOUNCE_MS   5     // Homing switch debounce interval
 #define START_BUTTON_DEBOUNCE_MS    20    // Start button debounce interval
 
 //* ************************************************************************
@@ -47,7 +47,7 @@
 #define HOMING_OFFSET_STEPS     (HOMING_OFFSET_MM * STEPS_PER_MM) // Convert to steps
 
 // Acceleration setting
-#define STEPPER_ACCELERATION    80000     // Steps/second² for all movements - reduced for better step reliability
+#define STEPPER_ACCELERATION    60000     // Steps/second² for all movements - reduced for better step reliability
 
 //* ************************************************************************
 //* ************************ CUTTING CYCLE SETTINGS **********************
@@ -55,9 +55,9 @@
 
 // Cutting cycle movements
 #define APPROACH_DISTANCE_INCHES    3.5     // Approach distance
-#define CUTTING_DISTANCE_INCHES     4.0     // Cutting distance  
-#define DROPOFF_DISTANCE_INCHES     15.0    // Drop off distance
-#define CLAMP_RETRACT_DISTANCE_INCHES 15.0   // Distance when clamps retract during drop off
+#define CUTTING_DISTANCE_INCHES     5.0     // Cutting distance  
+#define DROPOFF_DISTANCE_INCHES     12.5    // Drop off distance
+#define CLAMP_RETRACT_DISTANCE_INCHES 12.5   // Distance when clamps retract during drop off
 
 // Convert distances to steps
 #define APPROACH_DISTANCE_STEPS     (APPROACH_DISTANCE_INCHES * STEPS_PER_INCH)
@@ -68,8 +68,8 @@
 // Cutting cycle speeds (steps/second)
 #define APPROACH_SPEED              20000    // Approach speed - reduced for better reliability
 #define CUTTING_SPEED               400     // Cutting speed
-#define DROPOFF_SPEED               50000    // Drop off speed - reduced for better reliability
-#define RETURN_SPEED                80000    // Return to home speed - reduced for better reliability
+#define DROPOFF_SPEED               80000    // Drop off speed - reduced for better reliability
+#define RETURN_SPEED                100000    // Return to home speed - reduced for better reliability
 
 // Timing
 #define CLAMP_ENGAGE_DELAY_MS       500     // Wait time after clamp engagement

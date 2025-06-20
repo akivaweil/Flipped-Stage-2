@@ -132,6 +132,8 @@ void cuttingCycleState() {
             //! ************************************************************************
             static bool dropoffStarted = false;
             static long dropoffStartPosition = 0;
+            static bool dropoffDelayStarted = false;
+            static unsigned long dropoffDelayStartTime = 0;
             
             if (!dropoffStarted) {
                 dropoffStartPosition = stepper->getCurrentPosition();
@@ -162,9 +164,19 @@ void cuttingCycleState() {
             
             // Check if drop off movement is complete
             if (dropoffStarted && !stepper->isRunning()) {
-                Serial.println("Drop off complete! Starting return movement...");
-                currentSubstate = SUBSTATE_RETURN;
-                dropoffStarted = false; // Reset for next cycle
+                if (!dropoffDelayStarted) {
+                    Serial.println("Drop off complete! Starting 500ms delay before return...");
+                    dropoffDelayStartTime = millis();
+                    dropoffDelayStarted = true;
+                }
+                
+                // Check if 500ms delay has elapsed
+                if (dropoffDelayStarted && (millis() - dropoffDelayStartTime >= 500)) {
+                    Serial.println("Drop off delay complete! Starting return movement...");
+                    currentSubstate = SUBSTATE_RETURN;
+                    dropoffStarted = false; // Reset for next cycle
+                    dropoffDelayStarted = false; // Reset for next cycle
+                }
             }
             break;
         }
