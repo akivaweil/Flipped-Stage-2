@@ -44,30 +44,25 @@
 
 // Acceleration settings
 #define STEPPER_ACCELERATION    60000    // Steps/second² for all movements
-#define APPROACH_ACCELERATION   6000     // Steps/second² for approach movement - slower for precision
+#define APPROACH_ACCELERATION   20000     // Steps/second² for approach movement - slower for precision
 
 //* ************************************************************************
 //* ************************ CUTTING CYCLE SETTINGS **********************
 //* ************************************************************************
 
-// Cutting cycle movement distances (relative)
-#define APPROACH_DISTANCE_INCHES    3.5     // Approach distance
-#define CUTTING_DISTANCE_INCHES     6.0     // Cutting distance  
-#define DROPOFF_DISTANCE_INCHES     15.0    // Drop off distance
-#define EARLY_CLAMP_RELEASE_INCHES  12.0    // Early clamp release distance from home
+// Cutting cycle absolute positions (from home offset at 0)
+#define APPROACH_POSITION_INCHES    3.5     // Approach position
+#define CUTTING_POSITION_INCHES     9.5     // Cutting position  
+#define EARLY_CLAMP_RELEASE_POSITION_INCHES 12.0    // Early clamp release position
+#define DROPOFF_POSITION_INCHES     24.5    // Drop off position
+#define HOME_POSITION_INCHES        0.0     // Home offset position
 
-// Convert relative distances to steps
-#define APPROACH_DISTANCE_STEPS     (APPROACH_DISTANCE_INCHES * STEPS_PER_INCH)
-#define CUTTING_DISTANCE_STEPS      (CUTTING_DISTANCE_INCHES * STEPS_PER_INCH)
-#define DROPOFF_DISTANCE_STEPS      (DROPOFF_DISTANCE_INCHES * STEPS_PER_INCH)
-#define EARLY_CLAMP_RELEASE_STEPS   (EARLY_CLAMP_RELEASE_INCHES * STEPS_PER_INCH)
-
-// Absolute positions for cutting cycle (starting from home offset at 0)
-#define APPROACH_POSITION_STEPS     (APPROACH_DISTANCE_STEPS)                                                    // 3.5" from start
-#define CUTTING_POSITION_STEPS      (APPROACH_DISTANCE_STEPS + CUTTING_DISTANCE_STEPS)                          // 9.5" from start  
-#define EARLY_CLAMP_RELEASE_POSITION_STEPS (EARLY_CLAMP_RELEASE_STEPS)                                          // 12.0" from start
-#define DROPOFF_POSITION_STEPS      (APPROACH_DISTANCE_STEPS + CUTTING_DISTANCE_STEPS + DROPOFF_DISTANCE_STEPS) // 24.5" from start
-#define HOME_POSITION_STEPS         (0)                                                                          // Return to home offset
+// Convert absolute positions to steps
+#define APPROACH_POSITION_STEPS     (APPROACH_POSITION_INCHES * STEPS_PER_INCH)    // 3.5" from start
+#define CUTTING_POSITION_STEPS      (CUTTING_POSITION_INCHES * STEPS_PER_INCH)     // 9.5" from start  
+#define EARLY_CLAMP_RELEASE_POSITION_STEPS (EARLY_CLAMP_RELEASE_POSITION_INCHES * STEPS_PER_INCH) // 12.0" from start
+#define DROPOFF_POSITION_STEPS      (DROPOFF_POSITION_INCHES * STEPS_PER_INCH)     // 24.5" from start
+#define HOME_POSITION_STEPS         (HOME_POSITION_INCHES * STEPS_PER_INCH)        // Return to home offset
 
 // Cutting cycle speeds (steps/second)
 #define APPROACH_SPEED              20000    // Approach speed
