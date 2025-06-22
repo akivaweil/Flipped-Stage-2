@@ -25,12 +25,8 @@
 //* ************************ STEPPER MOTOR SETTINGS **********************
 //* ************************************************************************
 
-// Closed-loop stepper settings
-#define POSITION_TOLERANCE      10       // Maximum allowed position error (steps)
-#define AUTO_POSITION_CORRECTION true    // Enable automatic position correction
-
 // Motor specifications
-#define STEPS_PER_REV           400      // 200 steps per revolution
+#define STEPS_PER_REV           400      // Steps per revolution
 #define PULLEY_TEETH            60       // 60 tooth pulley
 #define BELT_PITCH_MM           2.0      // 2GT belt (2mm pitch)
 
@@ -42,37 +38,45 @@
 
 // Motion settings
 #define HOMING_SPEED            300      // Steps/second for homing
-#define HOMING_OFFSET_INCHES    .5      // Offset after homing trigger
+#define HOMING_OFFSET_INCHES    .5       // Offset after homing trigger
 #define HOMING_OFFSET_MM        (HOMING_OFFSET_INCHES * MM_PER_INCH)   // Convert to mm
-#define HOMING_OFFSET_STEPS     (HOMING_OFFSET_MM * STEPS_PER_MM) // Convert to steps
+#define HOMING_OFFSET_STEPS     (HOMING_OFFSET_MM * STEPS_PER_MM)      // Convert to steps
 
-// Acceleration setting
-#define STEPPER_ACCELERATION    60000     // Steps/second² for all movements - reduced for better step reliability
-#define APPROACH_ACCELERATION   2000      // Steps/second² for approach movement - slower for precision
+// Acceleration settings
+#define STEPPER_ACCELERATION    60000    // Steps/second² for all movements
+#define APPROACH_ACCELERATION   6000     // Steps/second² for approach movement - slower for precision
 
 //* ************************************************************************
 //* ************************ CUTTING CYCLE SETTINGS **********************
 //* ************************************************************************
 
-// Cutting cycle movements
+// Cutting cycle movement distances (relative)
 #define APPROACH_DISTANCE_INCHES    3.5     // Approach distance
-#define CUTTING_DISTANCE_INCHES     5.0     // Cutting distance  
-#define DROPOFF_DISTANCE_INCHES     15    // Drop off distance
+#define CUTTING_DISTANCE_INCHES     6.0     // Cutting distance  
+#define DROPOFF_DISTANCE_INCHES     15.0    // Drop off distance
+#define EARLY_CLAMP_RELEASE_INCHES  12.0    // Early clamp release distance from home
 
-// Convert distances to steps
+// Convert relative distances to steps
 #define APPROACH_DISTANCE_STEPS     (APPROACH_DISTANCE_INCHES * STEPS_PER_INCH)
 #define CUTTING_DISTANCE_STEPS      (CUTTING_DISTANCE_INCHES * STEPS_PER_INCH)
 #define DROPOFF_DISTANCE_STEPS      (DROPOFF_DISTANCE_INCHES * STEPS_PER_INCH)
+#define EARLY_CLAMP_RELEASE_STEPS   (EARLY_CLAMP_RELEASE_INCHES * STEPS_PER_INCH)
+
+// Absolute positions for cutting cycle (starting from home offset at 0)
+#define APPROACH_POSITION_STEPS     (APPROACH_DISTANCE_STEPS)                                                    // 3.5" from start
+#define CUTTING_POSITION_STEPS      (APPROACH_DISTANCE_STEPS + CUTTING_DISTANCE_STEPS)                          // 9.5" from start  
+#define EARLY_CLAMP_RELEASE_POSITION_STEPS (EARLY_CLAMP_RELEASE_STEPS)                                          // 12.0" from start
+#define DROPOFF_POSITION_STEPS      (APPROACH_DISTANCE_STEPS + CUTTING_DISTANCE_STEPS + DROPOFF_DISTANCE_STEPS) // 24.5" from start
+#define HOME_POSITION_STEPS         (0)                                                                          // Return to home offset
 
 // Cutting cycle speeds (steps/second)
-#define APPROACH_SPEED              20000    // Approach speed - reduced for better reliability
-#define CUTTING_SPEED               400     // Cutting speed
-#define DROPOFF_SPEED               80000    // Drop off speed - reduced for better reliability
-#define RETURN_SPEED                100000    // Return to home speed - reduced for better reliability
+#define APPROACH_SPEED              20000    // Approach speed
+#define CUTTING_SPEED               250      // Cutting speed
+#define DROPOFF_SPEED               80000    // Drop off speed
+#define RETURN_SPEED                100000   // Return to home speed
 
 // Timing
-#define CLAMP_ENGAGE_DELAY_MS       500     // Wait time after clamp engagement
-#define EMERGENCY_STOP_DELAY_MS     500     // Safety delay before emergency stop can be activated
+#define EMERGENCY_STOP_DELAY_MS     250      // Safety delay before emergency stop can be activated
 
 //* ************************************************************************
 //* ************************ STATE DEFINITIONS ****************************

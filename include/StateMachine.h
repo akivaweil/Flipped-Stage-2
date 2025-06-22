@@ -4,6 +4,7 @@
 #include <FastAccelStepper.h>
 #include <Bounce2.h>
 #include "Config/Config.h"
+#include "OTA_Manager.h"
 
 //* ************************************************************************
 //* ************************ GLOBAL OBJECTS *******************************
@@ -30,5 +31,9 @@ void cuttingCycleState();
 bool initializeHardware();
 void extendClamp();
 void retractClamp();
+
+// Clean syntax helper functions
+#define homingSwitchActive() homingSwitch.read()
+#define startButtonActive() startButton.read()
 
 #endif 

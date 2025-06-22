@@ -7,16 +7,14 @@
 
 void extendClamp() {
     //! ************************************************************************
-    //! EXTEND CLAMP: ACTIVATE RELAY (LOW SIGNAL)
+    //! EXTEND CLAMP: ACTIVATE RELAY (HIGH SIGNAL)
     //! ************************************************************************
     digitalWrite(CLAMP_RELAY_PIN, HIGH);
-    Serial.println("Clamp extended");
 }
 
 void retractClamp() {
     //! ************************************************************************
-    //! RETRACT CLAMP: DEACTIVATE RELAY (HIGH SIGNAL)
+    //! RETRACT CLAMP: DEACTIVATE RELAY (LOW SIGNAL)
     //! ************************************************************************
     digitalWrite(CLAMP_RELAY_PIN, LOW);
-    Serial.println("Clamp retracted");
 } 

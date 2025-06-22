@@ -3,99 +3,36 @@
 //* ************************************************************************
 //* ************************ CUTTING CYCLE ***************************
 //* ************************************************************************
-//! Cutting cycle state: Continuous movement with speed changes during motion
+//! Cutting cycle state: Sequential movement through approach, cutting, dropoff, and return phases
+//! Uses absolute positioning to move through predetermined positions along the linear axis
 
 void cuttingCycleState() {
-    // Static variables that need to be reset between cycles
     static bool firstEntry = true;
-    static unsigned long delayStartTime = 0;
-    static unsigned long cycleStartTime = 0;  // Track when cycle started
-    static bool clampEngaged = false;
-    static bool emergencyStop = false;
-    
-    // Substate-specific static variables
-    static bool approachStarted = false;
-    static bool cuttingStarted = false;
-    static bool dropoffStarted = false;
-    static long dropoffStartPosition = 0;
-    static bool dropoffDelayStarted = false;
+    static unsigned long cycleStartTime = 0;
     static unsigned long dropoffDelayStartTime = 0;
-    static bool returnStarted = false;
-    static bool clampsEngaged = false;
-    
-    // Function to reset all static variables for a complete fresh start
-    auto resetAllFlags = []() {
-        firstEntry = true;
-        delayStartTime = 0;
-        cycleStartTime = 0;
-        clampEngaged = false;
-        emergencyStop = false;
-        approachStarted = false;
-        cuttingStarted = false;
-        dropoffStarted = false;
-        dropoffStartPosition = 0;
-        dropoffDelayStarted = false;
-        dropoffDelayStartTime = 0;
-        returnStarted = false;
-        clampsEngaged = false;
-        clampsRetracted = false;
-    };
+    static bool emergencyStop = false;
+    static bool earlyClampReleased = false;
     
     if (firstEntry) {
-        Serial.println("Cutting cycle started...");
-        
-        // Check for closed-loop position drift before starting cycle
-        long currentPos = stepper->getCurrentPosition();
-        long expectedPos = HOMING_OFFSET_STEPS;
-        long positionError = abs(currentPos - expectedPos);
-        
-        if (positionError > 10) {  // Allow small tolerance
-            Serial.print("WARNING: Large position error detected! Current: ");
-            Serial.print(currentPos);
-            Serial.print(", Expected: ");
-            Serial.print(expectedPos);
-            Serial.print(", Error: ");
-            Serial.println(positionError);
-            Serial.println("This suggests closed-loop stepper corrections occurred");
-        }
-        
         currentSubstate = SUBSTATE_APPROACH;
         firstEntry = false;
-        clampsRetracted = false;
-        clampEngaged = false;
         emergencyStop = false;
-        cycleStartTime = millis();  // Record cycle start time
+        earlyClampReleased = false;
+        cycleStartTime = millis();
     }
     
     //! ************************************************************************
     //! EMERGENCY STOP CHECK - START BUTTON PRESSED DURING CYCLE
     //! ************************************************************************
-    // Only check for emergency stop after safety delay and if not already in emergency mode
+    //! Monitor for emergency stop condition after safety delay period
+    //! If start button pressed during cycle, immediately stop all movement and return home
     if (!emergencyStop && (millis() - cycleStartTime > EMERGENCY_STOP_DELAY_MS)) {
         startButton.update();
         if (startButton.pressed()) {
-            Serial.println("EMERGENCY STOP! Start button pressed during cutting cycle");
-            Serial.println("Stopping all movement and returning home...");
-            
-            // Immediately stop stepper movement
             stepper->forceStop();
-            
-            // Ensure clamps stay extended as requested
             extendClamp();
-            
-            // CRITICAL: Reset all substate flags to prevent skipping sections in next cycle
-            approachStarted = false;
-            cuttingStarted = false;
-            dropoffStarted = false;
-            dropoffDelayStarted = false;
-            returnStarted = false;
-            clampsEngaged = false;
-            
-            // Set emergency stop flag and go directly to emergency return
             emergencyStop = true;
             currentSubstate = SUBSTATE_RETURN;
-            Serial.println("Emergency return initiated - clamps remain extended");
-            Serial.println("All cycle flags reset for clean restart");
         }
     }
     
@@ -104,34 +41,17 @@ void cuttingCycleState() {
         case SUBSTATE_APPROACH:
         {
             //! ************************************************************************
-            //! SUBSTATE 1: APPROACH - EXTEND CLAMPS AND MOVE APPROACH DISTANCE
+            //! SUBSTATE 1: APPROACH - EXTEND CLAMPS AND MOVE TO APPROACH POSITION
             //! ************************************************************************
+            //! Extend clamps to secure workpiece, then move 3.5 inches forward from home offset
+            //! Position: 0 → 3.5 inches (APPROACH_POSITION_STEPS absolute position)
+            //! Speed: APPROACH_SPEED with reduced acceleration for precision
+            extendClamp();
+            stepper->setAcceleration(APPROACH_ACCELERATION);
+            stepper->setSpeedInHz(APPROACH_SPEED);
+            stepper->moveTo(APPROACH_POSITION_STEPS);
             
-            if (!clampEngaged) {
-                extendClamp();
-                clampEngaged = true;
-                Serial.println("Approach: Clamps extended, starting approach movement...");
-            }
-            
-            // Start approach movement immediately after clamp engagement
-            if (clampEngaged && !approachStarted) {
-                stepper->setAcceleration(APPROACH_ACCELERATION);
-                stepper->setSpeedInHz(APPROACH_SPEED);
-                stepper->move(APPROACH_DISTANCE_STEPS);
-                approachStarted = true;
-                Serial.print("Approach: Moving ");
-                Serial.print(APPROACH_DISTANCE_INCHES);
-                Serial.print(" inches at speed ");
-                Serial.print(APPROACH_SPEED);
-                Serial.print(" with acceleration ");
-                Serial.print(APPROACH_ACCELERATION);
-                Serial.println("...");
-            }
-            
-            // Check if approach movement is complete
-            if (approachStarted && !stepper->isRunning()) {
-                Serial.println("Approach complete! Starting cutting phase...");
-                // Reset acceleration to normal for other movements
+            if (!stepper->isRunning()) {
                 stepper->setAcceleration(STEPPER_ACCELERATION);
                 currentSubstate = SUBSTATE_CUTTING;
             }
@@ -141,23 +61,15 @@ void cuttingCycleState() {
         case SUBSTATE_CUTTING:
         {
             //! ************************************************************************
-            //! SUBSTATE 2: CUTTING - MOVE CUTTING DISTANCE AT SLOW SPEED
+            //! SUBSTATE 2: CUTTING - MOVE THROUGH CUTTING ZONE AT SLOW SPEED
             //! ************************************************************************
+            //! Move through cutting zone at slow speed for precise cutting operation
+            //! Position: 3.5 inches → 9.5 inches (CUTTING_POSITION_STEPS absolute position)
+            //! Speed: CUTTING_SPEED (slow for precision cutting)
+            stepper->setSpeedInHz(CUTTING_SPEED);
+            stepper->moveTo(CUTTING_POSITION_STEPS);
             
-            if (!cuttingStarted) {
-                stepper->setSpeedInHz(CUTTING_SPEED);
-                stepper->move(CUTTING_DISTANCE_STEPS);
-                cuttingStarted = true;
-                Serial.print("Cutting: Moving ");
-                Serial.print(CUTTING_DISTANCE_INCHES);
-                Serial.print(" inches at speed ");
-                Serial.print(CUTTING_SPEED);
-                Serial.println("...");
-            }
-            
-            // Check if cutting movement is complete
-            if (cuttingStarted && !stepper->isRunning()) {
-                Serial.println("Cutting complete! Starting drop off phase...");
+            if (!stepper->isRunning()) {
                 currentSubstate = SUBSTATE_DROPOFF;
             }
             break;
@@ -166,39 +78,38 @@ void cuttingCycleState() {
         case SUBSTATE_DROPOFF:
         {
             //! ************************************************************************
-            //! SUBSTATE 3: DROP OFF - MOVE DROP OFF DISTANCE THEN RETRACT CLAMPS
+            //! SUBSTATE 3: DROPOFF - MOVE TO DROPOFF POSITION WITH EARLY CLAMP RELEASE
             //! ************************************************************************
+            //! Move to final dropoff position with early clamp release at 12 inches
+            //! Position: 9.5 inches → 24.5 inches (DROPOFF_POSITION_STEPS absolute position)
+            //! Speed: DROPOFF_SPEED (fast movement to dropoff zone)
+            //! Early clamp release: Retract clamps when motor passes 12 inch position
+            //! After movement complete: wait 500ms before return
+            stepper->setSpeedInHz(DROPOFF_SPEED);
+            stepper->moveTo(DROPOFF_POSITION_STEPS);
             
-            if (!dropoffStarted) {
-                dropoffStartPosition = stepper->getCurrentPosition();
-                stepper->setSpeedInHz(DROPOFF_SPEED);
-                stepper->move(DROPOFF_DISTANCE_STEPS);
-                dropoffStarted = true;
-                Serial.print("Drop off: Moving ");
-                Serial.print(DROPOFF_DISTANCE_INCHES);
-                Serial.print(" inches at speed ");
-                Serial.print(DROPOFF_SPEED);
-                Serial.println("...");
+            //! ************************************************************************
+            //! EARLY CLAMP RELEASE - RETRACT CLAMPS AT 12 INCHES WITHOUT STOPPING MOTOR
+            //! ************************************************************************
+            //! Check if motor has passed the early clamp release position (12 inches)
+            //! Release clamps during movement to allow workpiece to drop early
+            if (!earlyClampReleased && !emergencyStop && 
+                stepper->getCurrentPosition() >= EARLY_CLAMP_RELEASE_POSITION_STEPS) {
+                retractClamp();
+                earlyClampReleased = true;
             }
             
-            // Check if drop off movement is complete
-            if (dropoffStarted && !stepper->isRunning()) {
-                // Retract clamps after movement complete but before delay
-                if (!clampsRetracted && !emergencyStop) {
+            if (!stepper->isRunning()) {
+                // Ensure clamps are retracted if not already done during early release
+                if (!emergencyStop && !earlyClampReleased) {
                     retractClamp();
-                    clampsRetracted = true;
-                    Serial.println("Drop off complete! Clamps retracted.");
                 }
                 
-                if (!dropoffDelayStarted) {
-                    Serial.println("Starting 1000ms delay before return...");
+                if (dropoffDelayStartTime == 0) {
                     dropoffDelayStartTime = millis();
-                    dropoffDelayStarted = true;
                 }
                 
-                // Check if 1000ms delay has elapsed
-                if (dropoffDelayStarted && (millis() - dropoffDelayStartTime >= 1000)) {
-                    Serial.println("Drop off delay complete! Starting return movement...");
+                if (millis() - dropoffDelayStartTime >= 500) {
                     currentSubstate = SUBSTATE_RETURN;
                 }
             }
@@ -208,63 +119,24 @@ void cuttingCycleState() {
         case SUBSTATE_RETURN:
         {
             //! ************************************************************************
-            //! SUBSTATE 4: RETURN - RETRACT CLAMPS AND RETURN TO HOME OFFSET
+            //! SUBSTATE 4: RETURN - RETRACT CLAMPS AND RETURN TO HOME OFFSET POSITION
             //! ************************************************************************
+            //! Ensure clamps are retracted for safety, then return to home offset position
+            //! Position: 24.5 inches → 0 inches (HOME_POSITION_STEPS absolute position)
+            //! Speed: RETURN_SPEED (fast return movement)
+            //! Upon completion: return to IDLE state and reset all cycle variables
+            retractClamp();
+            stepper->setSpeedInHz(RETURN_SPEED);
+            stepper->moveTo(HOME_POSITION_STEPS);
             
-            if (!clampsEngaged) {
-                retractClamp();
-                clampsEngaged = true;
-                if (emergencyStop) {
-                    Serial.println("Emergency return: Clamps retracted, returning to home...");
-                } else {
-                    Serial.println("Return: Clamps retracted, returning to home...");
-                }
-            }
-            
-            if (clampsEngaged && !returnStarted) {
-                stepper->setSpeedInHz(RETURN_SPEED);
-                stepper->moveTo(HOMING_OFFSET_STEPS);  // Return to home offset position
-                returnStarted = true;
-                Serial.print("Return: Moving to home offset position at speed ");
-                Serial.print(RETURN_SPEED);
-                Serial.println("...");
-            }
-            
-            // Check if return move is complete
-            if (returnStarted && !stepper->isRunning()) {
-                // Validate final position
-                long finalPosition = stepper->getCurrentPosition();
-                if (emergencyStop) {
-                    Serial.println("Emergency stop complete! Machine returned to IDLE state safely.");
-                    Serial.println("Clamps retracted for safety.");
-                } else {
-                    Serial.println("Cutting cycle complete! Returning to IDLE state...");
-                }
-                Serial.print("Final position: ");
-                Serial.print(finalPosition);
-                Serial.print(" (Target: ");
-                Serial.print(HOMING_OFFSET_STEPS);
-                Serial.println(")");
-                
-                // Position validation - warn if drift detected
-                if (abs(finalPosition - HOMING_OFFSET_STEPS) > 5) {
-                    Serial.println("WARNING: Position drift detected! Consider recalibration.");
-                }
-                
+            if (!stepper->isRunning()) {
                 currentState = STATE_IDLE;
-                
-                // CRITICAL: Complete reset of all static variables for next cycle
-                Serial.println("Performing complete reset of all cutting cycle flags...");
-                resetAllFlags();
-                Serial.println("All flags reset - ready for next cycle");
+                firstEntry = true;
+                dropoffDelayStartTime = 0;
+                emergencyStop = false;
+                earlyClampReleased = false;
             }
             break;
         }
-        
-        default:
-            Serial.println("ERROR: Unknown cutting substate! Returning to IDLE...");
-            currentState = STATE_IDLE;
-            resetAllFlags();
-            break;
     }
 } 

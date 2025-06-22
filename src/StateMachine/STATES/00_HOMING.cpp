@@ -4,21 +4,25 @@
 //* ************************ HOMING ***************************
 //* ************************************************************************
 //! Homing state: Move in negative direction until homing switch triggers,
-//! then offset 0.2 inches and transition to IDLE state
+//! then offset and transition to IDLE state
 
 void homingState() {
     static bool homingStarted = false;
     static bool homingComplete = false;
+    static unsigned long homingTimer = 0;
+    
+    // Handle OTA after 5 seconds to allow uploads even without USB connection
+    if (millis() - homingTimer >= 2000) {
+        handleOTA();
+        homingTimer = millis(); // Reset timer
+    }
     
     if (!homingStarted) {
-        Serial.println("Starting homing sequence...");
-        
         //! ************************************************************************
         //! STEP 1: RETRACT CLAMPS FOR SAFETY DURING HOMING
         //! ************************************************************************
         retractClamp();
         clampsRetracted = true;
-        Serial.println("Clamps retracted for safe homing");
         
         //! ************************************************************************
         //! STEP 2: ENABLE STEPPER AND SET DIRECTION
@@ -32,7 +36,7 @@ void homingState() {
         //! ************************************************************************
         stepper->runBackward();
         homingStarted = true;
-        Serial.println("Moving towards home switch...");
+        homingTimer = millis(); // Initialize timer when homing starts
     }
     
     // Update button states
@@ -41,8 +45,7 @@ void homingState() {
     //! ************************************************************************
     //! STEP 4: CHECK FOR HOMING SWITCH ACTIVATION
     //! ************************************************************************
-    if (homingSwitch.read() && !homingComplete) {
-        Serial.println("Homing switch triggered! Stopping motor...");
+    if (homingSwitchActive() && !homingComplete) {
         stepper->forceStopAndNewPosition(0);  // Stop and set current position as 0
         
         //! ************************************************************************
@@ -51,14 +54,12 @@ void homingState() {
         stepper->setCurrentPosition(0);
         stepper->moveTo(HOMING_OFFSET_STEPS);
         homingComplete = true;
-        Serial.println("Moving to offset position...");
     }
     
     //! ************************************************************************
     //! STEP 6: CHECK IF OFFSET MOVE IS COMPLETE
     //! ************************************************************************
     if (homingComplete && !stepper->isRunning()) {
-        Serial.println("Homing complete! Transitioning to IDLE state.");
         stepper->setCurrentPosition(HOMING_OFFSET_STEPS);  // Set position to homing offset
         currentState = STATE_IDLE;
         
