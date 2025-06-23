@@ -56,6 +56,7 @@
 #define EARLY_CLAMP_RELEASE_POSITION_INCHES 18.0    // Early clamp release position
 #define DROPOFF_POSITION_INCHES     24.5    // Drop off position
 #define HOME_POSITION_INCHES        0.0     // Home offset position
+#define EMERGENCY_RECOVERY_POSITION_INCHES  -1.0    // Emergency recovery position (1 inch away from home)
 
 // Convert absolute positions to steps
 #define APPROACH_POSITION_STEPS     (APPROACH_POSITION_INCHES * STEPS_PER_INCH)    // 3.5" from start
@@ -63,6 +64,7 @@
 #define EARLY_CLAMP_RELEASE_POSITION_STEPS (EARLY_CLAMP_RELEASE_POSITION_INCHES * STEPS_PER_INCH) // 12.0" from start
 #define DROPOFF_POSITION_STEPS      (DROPOFF_POSITION_INCHES * STEPS_PER_INCH)     // 24.5" from start
 #define HOME_POSITION_STEPS         (HOME_POSITION_INCHES * STEPS_PER_INCH)        // Return to home offset
+#define EMERGENCY_RECOVERY_POSITION_STEPS (EMERGENCY_RECOVERY_POSITION_INCHES * STEPS_PER_INCH) // 1" away from home
 
 // Cutting cycle speeds (steps/second)
 #define APPROACH_SPEED              20000    // Approach speed
@@ -88,7 +90,8 @@ enum CuttingSubstate {
     SUBSTATE_APPROACH,
     SUBSTATE_CUTTING,
     SUBSTATE_DROPOFF,
-    SUBSTATE_RETURN
+    SUBSTATE_RETURN,
+    SUBSTATE_EMERGENCY_RECOVERY
 };
 
 // Global state variable declaration
