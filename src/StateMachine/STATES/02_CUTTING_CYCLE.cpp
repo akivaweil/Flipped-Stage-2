@@ -132,59 +132,19 @@ void cuttingCycleState() {
             //! Ensure clamps are retracted for safety, then return to home offset position
             //! Position: 24.5 inches → 0 inches (HOME_POSITION_STEPS absolute position)
             //! Speed: RETURN_SPEED (fast return movement)
-            //! Upon completion: Check if emergency stop occurred for recovery sequence
+            //! Upon completion: return to IDLE state and reset all cycle variables
             retractClamp();
             stepper->setSpeedInHz(RETURN_SPEED);
             stepper->moveTo(HOME_POSITION_STEPS);
             
             if (!stepper->isRunning()) {
-                if (emergencyStop) {
-                    //! ************************************************************************
-                    //! EMERGENCY STOP RECOVERY: TRANSITION TO EMERGENCY RECOVERY SUBSTATE
-                    //! ************************************************************************
-                    currentSubstate = SUBSTATE_EMERGENCY_RECOVERY;
-                } else {
-                    //! ************************************************************************
-                    //! NORMAL CYCLE COMPLETION: RETURN TO IDLE STATE
-                    //! ************************************************************************
-                    currentState = STATE_IDLE;
-                    firstEntry = true;
-                    dropoffDelayStartTime = 0;
-                    emergencyStop = false;
-                    earlyClampReleased = false;
-                    //! ************************************************************************
-                    //! TURN OFF WARNING LIGHT AT END OF CUTTING CYCLE
-                    //! ************************************************************************
-                    turnOffWarningLight();
-                }
-            }
-            break;
-        }
-        
-        case SUBSTATE_EMERGENCY_RECOVERY:
-        {
-            //! ************************************************************************
-            //! SUBSTATE 5: EMERGENCY RECOVERY - MOVE 1 INCH AWAY FROM HOME THEN RE-HOME
-            //! ************************************************************************
-            //! After emergency stop and return to home, move 1 inch away from home position
-            //! then transition to homing state to re-establish accurate home position
-            //! Position: 0 inches → -1 inch (EMERGENCY_RECOVERY_POSITION_STEPS)
-            //! Speed: RETURN_SPEED (fast movement away from home)
-            //! Upon completion: transition to HOMING state
-            stepper->setSpeedInHz(RETURN_SPEED);
-            stepper->moveTo(EMERGENCY_RECOVERY_POSITION_STEPS);
-            
-            if (!stepper->isRunning()) {
-                //! ************************************************************************
-                //! TRANSITION TO HOMING STATE FOR RE-HOMING SEQUENCE
-                //! ************************************************************************
-                currentState = STATE_HOMING;
+                currentState = STATE_IDLE;
                 firstEntry = true;
                 dropoffDelayStartTime = 0;
                 emergencyStop = false;
                 earlyClampReleased = false;
                 //! ************************************************************************
-                //! TURN OFF WARNING LIGHT BEFORE HOMING
+                //! TURN OFF WARNING LIGHT AT END OF CUTTING CYCLE
                 //! ************************************************************************
                 turnOffWarningLight();
             }
