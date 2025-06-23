@@ -109,7 +109,7 @@ void cuttingCycleState() {
                     dropoffDelayStartTime = millis();
                 }
                 
-                if (millis() - dropoffDelayStartTime >= 500) {
+                if (millis() - dropoffDelayStartTime >= 200) {
                     currentSubstate = SUBSTATE_RETURN;
                 }
             }

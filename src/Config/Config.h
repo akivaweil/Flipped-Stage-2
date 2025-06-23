@@ -38,13 +38,13 @@
 
 // Motion settings
 #define HOMING_SPEED            300      // Steps/second for homing
-#define HOMING_OFFSET_INCHES    .5       // Offset after homing trigger
+#define HOMING_OFFSET_INCHES    .3       // Offset after homing trigger
 #define HOMING_OFFSET_MM        (HOMING_OFFSET_INCHES * MM_PER_INCH)   // Convert to mm
 #define HOMING_OFFSET_STEPS     (HOMING_OFFSET_MM * STEPS_PER_MM)      // Convert to steps
 
 // Acceleration settings
-#define STEPPER_ACCELERATION    60000    // Steps/second² for all movements
-#define APPROACH_ACCELERATION   20000     // Steps/second² for approach movement - slower for precision
+#define STEPPER_ACCELERATION    40000    // Steps/second² for all movements
+#define APPROACH_ACCELERATION   10000     // Steps/second² for approach movement - slower for precision
 
 //* ************************************************************************
 //* ************************ CUTTING CYCLE SETTINGS **********************
@@ -53,7 +53,7 @@
 // Cutting cycle absolute positions (from home offset at 0)
 #define APPROACH_POSITION_INCHES    3.5     // Approach position
 #define CUTTING_POSITION_INCHES     9.5     // Cutting position  
-#define EARLY_CLAMP_RELEASE_POSITION_INCHES 12.0    // Early clamp release position
+#define EARLY_CLAMP_RELEASE_POSITION_INCHES 18.0    // Early clamp release position
 #define DROPOFF_POSITION_INCHES     24.5    // Drop off position
 #define HOME_POSITION_INCHES        0.0     // Home offset position
 
