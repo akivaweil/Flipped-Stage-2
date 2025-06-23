@@ -19,6 +19,10 @@ void cuttingCycleState() {
         emergencyStop = false;
         earlyClampReleased = false;
         cycleStartTime = millis();
+        //! ************************************************************************
+        //! TURN ON WARNING LIGHT AT START OF CUTTING CYCLE
+        //! ************************************************************************
+        turnOnWarningLight();
     }
     
     //! ************************************************************************
@@ -33,6 +37,10 @@ void cuttingCycleState() {
             extendClamp();
             emergencyStop = true;
             currentSubstate = SUBSTATE_RETURN;
+            //! ************************************************************************
+            //! TURN OFF WARNING LIGHT ON EMERGENCY STOP
+            //! ************************************************************************
+            turnOffWarningLight();
         }
     }
     
@@ -135,6 +143,10 @@ void cuttingCycleState() {
                 dropoffDelayStartTime = 0;
                 emergencyStop = false;
                 earlyClampReleased = false;
+                //! ************************************************************************
+                //! TURN OFF WARNING LIGHT AT END OF CUTTING CYCLE
+                //! ************************************************************************
+                turnOffWarningLight();
             }
             break;
         }

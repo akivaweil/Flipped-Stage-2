@@ -45,5 +45,9 @@ bool initializeHardware() {
     pinMode(CLAMP_RELAY_PIN, OUTPUT);
     digitalWrite(CLAMP_RELAY_PIN, LOW);  // Start with clamp retracted (LOW signal)
     
+    // Warning light relay control - initialize to OFF position (Active LOW relay)
+    pinMode(WARNING_LIGHT_PIN, OUTPUT);
+    digitalWrite(WARNING_LIGHT_PIN, HIGH);  // Start with warning light OFF (HIGH signal for active LOW relay)
+    
     return true;
 } 

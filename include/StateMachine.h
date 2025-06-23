@@ -31,6 +31,8 @@ void cuttingCycleState();
 bool initializeHardware();
 void extendClamp();
 void retractClamp();
+void turnOnWarningLight();
+void turnOffWarningLight();
 
 // Clean syntax helper functions
 #define homingSwitchActive() homingSwitch.read()

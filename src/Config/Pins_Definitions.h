@@ -32,4 +32,7 @@
 // Clamp control relay
 #define CLAMP_RELAY_PIN         37
 
+// Warning light relay (Active LOW)
+#define WARNING_LIGHT_PIN       41
+
 #endif 
