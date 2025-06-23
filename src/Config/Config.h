@@ -62,7 +62,7 @@
 #define CUTTING_POSITION_STEPS      (CUTTING_POSITION_INCHES * STEPS_PER_INCH)     // 9.5" from start  
 #define EARLY_CLAMP_RELEASE_POSITION_STEPS (EARLY_CLAMP_RELEASE_POSITION_INCHES * STEPS_PER_INCH) // 12.0" from start
 #define DROPOFF_POSITION_STEPS      (DROPOFF_POSITION_INCHES * STEPS_PER_INCH)     // 24.5" from start
-#define HOME_POSITION_STEPS         (HOME_POSITION_INCHES * STEPS_PER_INCH)        // Return to home offset
+#define HOME_POSITION_STEPS         (HOME_POSITION_INCHES * STEPS_PER_INCH)        // Return to zero position
 
 // Cutting cycle speeds (steps/second)
 #define APPROACH_SPEED              20000    // Approach speed

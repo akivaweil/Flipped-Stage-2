@@ -60,7 +60,7 @@ void homingState() {
     //! STEP 6: CHECK IF OFFSET MOVE IS COMPLETE
     //! ************************************************************************
     if (homingComplete && !stepper->isRunning()) {
-        stepper->setCurrentPosition(HOMING_OFFSET_STEPS);  // Set position to homing offset
+        stepper->setCurrentPosition(0);  // Set position to 0 - this offset position becomes our zero reference
         currentState = STATE_IDLE;
         
         // Reset homing flags for next time

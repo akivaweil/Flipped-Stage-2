@@ -127,10 +127,10 @@ void cuttingCycleState() {
         case SUBSTATE_RETURN:
         {
             //! ************************************************************************
-            //! SUBSTATE 4: RETURN - RETRACT CLAMPS AND RETURN TO HOME OFFSET POSITION
+            //! SUBSTATE 4: RETURN - RETRACT CLAMPS AND RETURN TO ZERO POSITION
             //! ************************************************************************
-            //! Ensure clamps are retracted for safety, then return to home offset position
-            //! Position: 24.5 inches → 0 inches (HOME_POSITION_STEPS absolute position)
+            //! Ensure clamps are retracted for safety, then return to zero position
+            //! Position: Current position → 0 inches (HOME_POSITION_STEPS absolute position)
             //! Speed: RETURN_SPEED (fast return movement)
             //! Upon completion: return to IDLE state and reset all cycle variables
             retractClamp();
