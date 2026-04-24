@@ -54,8 +54,8 @@
 #define APPROACH_POSITION_INCHES    3.8     // Approach position
 #define CUTTING_POSITION_INCHES     9.7     // Cutting position  
 #define EARLY_CLAMP_RELEASE_POSITION_INCHES 18.0    // Early clamp release position
-#define DROPOFF_POSITION_INCHES     20.0    // TEMP: clamped to 20" to verify clearance (normal: 25.0)
-#define DROPOFF_RANDOM_RANGE_INCHES 0.0     // TEMP: no randomization while verifying clearance (normal: 5.0)
+#define DROPOFF_POSITION_INCHES     25.0    // Drop off position (furthest / max)
+#define DROPOFF_RANDOM_RANGE_INCHES 3.5     // Random drop-off zone spans last 3.5" before max (min 21.5")
 #define HOME_POSITION_INCHES        0.0     // Home offset position
 
 // Convert absolute positions to steps
