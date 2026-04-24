@@ -1,5 +1,7 @@
 #include "StateMachine.h"
 
+static constexpr unsigned long DROPOFF_WAIT_MS = 50;
+
 //* ************************************************************************
 //* ************************ CUTTING CYCLE ***************************
 //* ************************************************************************
@@ -12,12 +14,15 @@ void cuttingCycleState() {
     static unsigned long dropoffDelayStartTime = 0;
     static bool emergencyStop = false;
     static bool earlyClampReleased = false;
-    
+    static long dropoffTargetSteps = DROPOFF_POSITION_STEPS;
+    static bool dropoffTargetPicked = false;
+
     if (firstEntry) {
         currentSubstate = SUBSTATE_APPROACH;
         firstEntry = false;
         emergencyStop = false;
         earlyClampReleased = false;
+        dropoffTargetPicked = false;
         cycleStartTime = millis();
         //! ************************************************************************
         //! TURN ON WARNING LIGHT AT START OF CUTTING CYCLE
@@ -88,13 +93,17 @@ void cuttingCycleState() {
             //! ************************************************************************
             //! SUBSTATE 3: DROPOFF - MOVE TO DROPOFF POSITION WITH EARLY CLAMP RELEASE
             //! ************************************************************************
-            //! Move to final dropoff position with early clamp release at 12 inches
-            //! Position: 9.5 inches → 24.5 inches (DROPOFF_POSITION_STEPS absolute position)
+            //! Move to a randomized dropoff position within the last DROPOFF_RANDOM_RANGE_INCHES
+            //! Position: cutting → random in [DROPOFF_MIN_POSITION_STEPS, DROPOFF_POSITION_STEPS]
             //! Speed: DROPOFF_SPEED (fast movement to dropoff zone)
-            //! Early clamp release: Retract clamps when motor passes 12 inch position
-            //! After movement complete: wait 500ms before return
+            //! Early clamp release: Retract clamps when motor passes EARLY_CLAMP_RELEASE position
+            //! After movement complete: wait DROPOFF_WAIT_MS before return
+            if (!dropoffTargetPicked) {
+                dropoffTargetSteps = random(DROPOFF_MIN_POSITION_STEPS, DROPOFF_POSITION_STEPS + 1);
+                dropoffTargetPicked = true;
+            }
             stepper->setSpeedInHz(DROPOFF_SPEED);
-            stepper->moveTo(DROPOFF_POSITION_STEPS);
+            stepper->moveTo(dropoffTargetSteps);
             
             //! ************************************************************************
             //! EARLY CLAMP RELEASE - RETRACT CLAMPS AT 12 INCHES WITHOUT STOPPING MOTOR
@@ -117,7 +126,7 @@ void cuttingCycleState() {
                     dropoffDelayStartTime = millis();
                 }
                 
-                if (millis() - dropoffDelayStartTime >= 200) {
+                if (millis() - dropoffDelayStartTime >= DROPOFF_WAIT_MS) {
                     currentSubstate = SUBSTATE_RETURN;
                 }
             }
