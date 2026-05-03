@@ -136,17 +136,25 @@ void cuttingCycleState() {
         case SUBSTATE_RETURN:
         {
             //! ************************************************************************
-            //! SUBSTATE 4: RETURN - RETRACT CLAMPS AND RETURN TO ZERO POSITION
+            //! SUBSTATE 4: RETURN - RETURN TO ZERO POSITION
             //! ************************************************************************
-            //! Ensure clamps are retracted for safety, then return to zero position
+            //! Normal return: clamps already retracted, return at RETURN_SPEED
+            //! Emergency stop return: keep clamps extended, return at HOMING_SPEED,
+            //!   then retract clamps once home position is reached
             //! Position: Current position → 0 inches (HOME_POSITION_STEPS absolute position)
-            //! Speed: RETURN_SPEED (fast return movement)
             //! Upon completion: return to IDLE state and reset all cycle variables
-            retractClamp();
-            stepper->setSpeedInHz(RETURN_SPEED);
+            if (emergencyStop) {
+                stepper->setSpeedInHz(HOMING_SPEED);
+            } else {
+                retractClamp();
+                stepper->setSpeedInHz(RETURN_SPEED);
+            }
             stepper->moveTo(HOME_POSITION_STEPS);
             
             if (!stepper->isRunning()) {
+                if (emergencyStop) {
+                    retractClamp();
+                }
                 currentState = STATE_IDLE;
                 firstEntry = true;
                 dropoffDelayStartTime = 0;

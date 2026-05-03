@@ -58,9 +58,11 @@ void setup() {
 
 void loop() {
     //! ************************************************************************
-    //! STEP 1: HANDLE OTA UPDATES
+    //! STEP 1: HANDLE OTA UPDATES (ONLY WHEN IDLE FOR SAFETY)
     //! ************************************************************************
-    handleOTA();
+    if (currentState == STATE_IDLE) {
+        handleOTA();
+    }
     
     //! ************************************************************************
     //! STEP 2: RUN STATE MACHINE
